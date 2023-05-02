@@ -19,6 +19,8 @@ class Agent:
         self.memory = deque(maxlen=MAX_MEMORY)
         
         self.model = Linear_QNet(11, 256, 3)
+        # self.model.load_state_dict(torch.load("game136_score72.pth"))
+        
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
     
     def get_state(self, game):
@@ -95,10 +97,10 @@ def train():
     total_score = 0
     record = 0
     
-    agent = Agent()
+    agent = Agent()    
     game = SnakeGameRL()
     
-    while True:
+    while True:        
         state_old = agent.get_state(game)
         final_move = agent.get_action(state_old)
         
@@ -126,6 +128,41 @@ def train():
             plot_mean_scores.append(mean_score)
             
             plot(plot_scores, plot_mean_scores)
+            
+def play():
+    record = 0
+    
+    agent = Agent()
+    agent.model.load_state_dict(torch.load("game136_score72.pth"))
+    
+    game = SnakeGameRL()
+    
+    while True:
+        state = agent.get_state(game)
+        
+        final_move = [0, 0, 0]
+        
+        state0 = torch.tensor(state, dtype=torch.float)
+        prediction = agent.model(state0)
+        move = torch.argmax(prediction).item()    
+        final_move[move] = 1
+        
+        _, done, score = game.play_step(final_move)
+        
+        if done:
+            game.reset()
+            agent.n_game = agent.n_game + 1
+            
+            if score > record:
+                record = score
+                
+            print(f"Game: {agent.n_game}, Score: {score}, Record: {record}")
+    
 
 if __name__ == "__main__":
-    train()
+    isTrain = False
+    
+    if isTrain:
+        train()
+    else:
+        play()

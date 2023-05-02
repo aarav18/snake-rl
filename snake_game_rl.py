@@ -25,7 +25,7 @@ BLUE2 = (0, 100, 255)
 BLACK = (0, 0, 0)
 
 class SnakeGameRL:
-    def __init__(self, w=640, h=480) -> None:
+    def __init__(self, w=400, h=400) -> None:
         self.w = w
         self.h = h
         
@@ -90,15 +90,15 @@ class SnakeGameRL:
         return reward, game_over, self.score
 
     def _update_ui(self):
-        self.display.fill(BLACK)
+        self.display.fill(WHITE)
         
         for pt in self.snake:
             pygame.draw.rect(self.display, BLUE1, pygame.Rect(pt.x, pt.y, BLOCK_SIZE, BLOCK_SIZE))
             pygame.draw.rect(self.display, BLUE2, pygame.Rect(pt.x + 4, pt.y + 4, 12, 12))
         pygame.draw.rect(self.display, RED, pygame.Rect(self.food.x, self.food.y, BLOCK_SIZE, BLOCK_SIZE))
         
-        text = font.render("Score: " + str(self.score), True, WHITE)
-        self.display.blit(text, [0, 0])
+        text = font.render("Score: " + str(self.score), True, BLACK)
+        self.display.blit(text, [10, 5])
         
         pygame.display.flip()
 
